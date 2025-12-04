@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+    <form method="POST" action="{{ route('register') }}" id="register-form">
         @csrf
 
         <!-- Name -->
@@ -39,8 +39,9 @@
         </div>
 
         <!-- Google reCAPTCHA -->
+        <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
+
         <div class="mt-4">
-            <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
             @if ($errors->has('g-recaptcha-response'))
                 <span class="mt-2 text-sm text-red-600 dark:text-red-400" style="display:block">
                     <strong>{{ $errors->first('g-recaptcha-response') }}</strong>
@@ -60,19 +61,18 @@
         </div>
     </form>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const form = document.getElementById('register-form');
 
             // Cek apakah form ada dan reCAPTCHA script sudah dimuat
             if (form && typeof grecaptcha !== 'undefined') {
-                form.addEventListener('submit', function(e) {
+                form.addEventListener('submit', function (e) {
                     e.preventDefault(); // Mencegah form submit default
 
-                    // Panggil reCAPTCHA v3 dengan action yang spesifik
+                    // Panggil reCAPTCHA v3
                     grecaptcha.ready(function() {
-                        grecaptcha.execute('{{ env('CAPTCHA_KEY') }}', {
-                            action: 'register'
-                        }).then(function(token) {
+                        // Pastikan 'CAPTCHA_KEY' sudah dikonfigurasi di .env
+                        grecaptcha.execute('{{ env('CAPTCHA_KEY') }}', {action: 'register'}).then(function(token) {
                             // Masukkan token ke input tersembunyi
                             document.getElementById('g-recaptcha-response').value = token;
 
